@@ -1,289 +1,399 @@
-# This file is dual licensed under the terms of the Apache License, Version
-# 2.0, and the BSD License. See the LICENSE file in the root of this repository
-# for complete details.
+#linked list implementation
+class node:
+    def __init__(self,datavalue = None):
+        self.datavalue = datavalue
+        self.nextvalue = None
+class slinkedlist:
+    def __init__(self):
+        self.headvalue = None
+
+class slinkedlist_print:
+    def __init__(self):
+        self.headvalue = None
+    def printlist(self):
+        printval = self.headvalue
+        while printval is None:
+            print(printval.datavalue)
+            printval = printval.nextvalue
+
+#create linked list of first k numbers
+
+class node:
+    def __init__(self,data):
+        self.data = data
+        self.next = None
+def createsll(k):
+    if k == 0:
+        return None
+    temp = node(1)
+    head = temp
+    for i in range(2,k+1):
+        temp.next = node(i)
+        temp = temp.next
+    return head
+    
+#given the head, print the data values in the linked list
+def printdata(head):
+    if not head:
+        print('no data')
+    while head!=None:
+        print(head.data)
+        head = head.next
+
+#insert data before first node
+def insertData(head,data):
+    temp = node(data)
+    if head == None:
+        return temp
+    temp.nextaddr = head
+    head = temp
+    return head
+
+#insert data at last node
+
+def insertLast(head, data):
+    last = node(data)
+    temp = head
+    if head == None:
+        return last
+    while head.nextaddr!=None:
+        head = head.nextaddr
+    head.nextaddr = last
+    return head
+
+#delete first node
+def deleteFirstNode(head):
+    if head == None:
+        return head
+    head = head.nextaddr
+    return head
+
+#implement stack in python
+
+class stack:
+    def __init__(self):
+        self.mem = []
+        self.size = 0
+        self.top = -1
+    
+    def push(self,data):
+        self.top +=1
+        self.mem.append(data)
+        self.size+=1
+    
+    def pop(self):
+        if self.pop == -1:
+            print('no data')
+            return None
+        else:
+            self.mem.pop(self.top)
+            self.top -= 1
+            self.size -= 1
+
+    def topst(self):
+        if self.top == -1:
+            print('stack empty')
+            return None
+        else:
+            return self.mem(self.top)
+    
+    def printstack(self):
+        print(self.mem)
+    
+    def getsize(self):
+        print(f'size of the stack is {len(self.mem)}')
 
 
-import typing
+#Binary trees in python
 
-from cryptography import utils
-from cryptography.exceptions import InvalidSignature
-from cryptography.hazmat.backends.openssl.utils import (
-    _calculate_digest_and_algorithm,
-    _check_not_prehashed,
-    _warn_sign_verify_deprecated,
-)
-from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.asymmetric import (
-    AsymmetricSignatureContext,
-    AsymmetricVerificationContext,
-    dsa,
-    utils as asym_utils,
-)
+class Node:
+    def __init__(self, data):
+      self.left = None
+      self.right = None
+      self.data = data
 
+    def insert(self, data):
+# Compare the new value with the parent node
+        if self.data:
+            if data < self.data:
+                if self.left is None:
+                    self.left = Node(data)
+                else:
+                    self.left.insert(data)
+            elif data > self.data:
+                if self.right is None:
+                    self.right = Node(data)
+                else:
+                    self.right.insert(data)
+        else:
+            self.data = data
+    
 
-def _dsa_sig_sign(backend, private_key, data):
-    sig_buf_len = backend._lib.DSA_size(private_key._dsa_cdata)
-    sig_buf = backend._ffi.new("unsigned char[]", sig_buf_len)
-    buflen = backend._ffi.new("unsigned int *")
+        
 
-    # The first parameter passed to DSA_sign is unused by OpenSSL but
-    # must be an integer.
-    res = backend._lib.DSA_sign(
-        0, data, len(data), sig_buf, buflen, private_key._dsa_cdata
-    )
-    backend.openssl_assert(res == 1)
-    backend.openssl_assert(buflen[0])
+#binary trees
 
-    return backend._ffi.buffer(sig_buf)[: buflen[0]]
+class Node:
+    def __init__(self, data):
+      self.left = None
+      self.right = None
+      self.data = data
+# Insert Node
+    def insert(self, data):
+        if self.data:
+            if data < self.data:
+                if self.left is None:
+                    self.left = Node(data)
+                else:
+                    self.left.insert(data)
+            elif data > self.data:
+                if self.right is None:
+                    self.right = Node(data)
+                else:
+                    self.right.insert(data)
+        else:
+            self.data = data
+# Print the Tree
+    def PrintTree(self):
+        if self.left:
+            self.left.PrintTree()
+        print(self.data)
+        if self.right:
+            self.right.PrintTree()
+# Inorder traversal
+# Left -> Root -> Right
+    def inorderTraversal(self, root):
+        res = []
+        if root:
+            res = self.inorderTraversal(root.left)
+            res.append(root.data)
+            res = res + self.inorderTraversal(root.right)
+        return res
 
+    def PreorderTraversal(self, root):
+        res = []
+        if root:
+            res.append(root.data)
+            res = res + self.PreorderTraversal(root.left)
+            res = res + self.PreorderTraversal(root.right)
+        return res
+    
+    def PostorderTraversal(self, root):
+        res = []
+        if root:
+            res = self.PostorderTraversal(root.left)
+            res = res + self.PostorderTraversal(root.right)
+            res.append(root.data)
+        return res
 
-def _dsa_sig_verify(backend, public_key, signature, data):
-    # The first parameter passed to DSA_verify is unused by OpenSSL but
-    # must be an integer.
-    res = backend._lib.DSA_verify(
-        0, data, len(data), signature, len(signature), public_key._dsa_cdata
-    )
-
-    if res != 1:
-        backend._consume_errors()
-        raise InvalidSignature
-
-
-class _DSAVerificationContext(AsymmetricVerificationContext):
-    def __init__(self, backend, public_key, signature, algorithm):
-        self._backend = backend
-        self._public_key = public_key
-        self._signature = signature
-        self._algorithm = algorithm
-
-        self._hash_ctx = hashes.Hash(self._algorithm, self._backend)
-
-    def update(self, data):
-        self._hash_ctx.update(data)
-
-    def verify(self):
-        data_to_verify = self._hash_ctx.finalize()
-
-        _dsa_sig_verify(
-            self._backend, self._public_key, self._signature, data_to_verify
-        )
-
-
-class _DSASignatureContext(AsymmetricSignatureContext):
-    def __init__(
-        self,
-        backend,
-        private_key: dsa.DSAPrivateKey,
-        algorithm: hashes.HashAlgorithm,
-    ):
-        self._backend = backend
-        self._private_key = private_key
-        self._algorithm = algorithm
-        self._hash_ctx = hashes.Hash(self._algorithm, self._backend)
-
-    def update(self, data: bytes) -> None:
-        self._hash_ctx.update(data)
-
-    def finalize(self) -> bytes:
-        data_to_sign = self._hash_ctx.finalize()
-        return _dsa_sig_sign(self._backend, self._private_key, data_to_sign)
-
-
-class _DSAParameters(dsa.DSAParameters):
-    def __init__(self, backend, dsa_cdata):
-        self._backend = backend
-        self._dsa_cdata = dsa_cdata
-
-    def parameter_numbers(self) -> dsa.DSAParameterNumbers:
-        p = self._backend._ffi.new("BIGNUM **")
-        q = self._backend._ffi.new("BIGNUM **")
-        g = self._backend._ffi.new("BIGNUM **")
-        self._backend._lib.DSA_get0_pqg(self._dsa_cdata, p, q, g)
-        self._backend.openssl_assert(p[0] != self._backend._ffi.NULL)
-        self._backend.openssl_assert(q[0] != self._backend._ffi.NULL)
-        self._backend.openssl_assert(g[0] != self._backend._ffi.NULL)
-        return dsa.DSAParameterNumbers(
-            p=self._backend._bn_to_int(p[0]),
-            q=self._backend._bn_to_int(q[0]),
-            g=self._backend._bn_to_int(g[0]),
-        )
-
-    def generate_private_key(self) -> dsa.DSAPrivateKey:
-        return self._backend.generate_dsa_private_key(self)
+root = Node(27)
+root.insert(14)
+root.insert(35)
+root.insert(10)
+root.insert(19)
+root.insert(31)
+root.insert(42)
+root.PrintTree()
+print(root.inorderTraversal(root))      
+print(root.PreorderTraversal(root))
+print(root.PostorderTraversal(root))
 
 
-class _DSAPrivateKey(dsa.DSAPrivateKey):
-    def __init__(self, backend, dsa_cdata, evp_pkey):
-        self._backend = backend
-        self._dsa_cdata = dsa_cdata
-        self._evp_pkey = evp_pkey
 
-        p = self._backend._ffi.new("BIGNUM **")
-        self._backend._lib.DSA_get0_pqg(
-            dsa_cdata, p, self._backend._ffi.NULL, self._backend._ffi.NULL
-        )
-        self._backend.openssl_assert(p[0] != backend._ffi.NULL)
-        self._key_size = self._backend._lib.BN_num_bits(p[0])
-
-    key_size = utils.read_only_property("_key_size")
-
-    def signer(
-        self, signature_algorithm: hashes.HashAlgorithm
-    ) -> AsymmetricSignatureContext:
-        _warn_sign_verify_deprecated()
-        _check_not_prehashed(signature_algorithm)
-        return _DSASignatureContext(self._backend, self, signature_algorithm)
-
-    def private_numbers(self) -> dsa.DSAPrivateNumbers:
-        p = self._backend._ffi.new("BIGNUM **")
-        q = self._backend._ffi.new("BIGNUM **")
-        g = self._backend._ffi.new("BIGNUM **")
-        pub_key = self._backend._ffi.new("BIGNUM **")
-        priv_key = self._backend._ffi.new("BIGNUM **")
-        self._backend._lib.DSA_get0_pqg(self._dsa_cdata, p, q, g)
-        self._backend.openssl_assert(p[0] != self._backend._ffi.NULL)
-        self._backend.openssl_assert(q[0] != self._backend._ffi.NULL)
-        self._backend.openssl_assert(g[0] != self._backend._ffi.NULL)
-        self._backend._lib.DSA_get0_key(self._dsa_cdata, pub_key, priv_key)
-        self._backend.openssl_assert(pub_key[0] != self._backend._ffi.NULL)
-        self._backend.openssl_assert(priv_key[0] != self._backend._ffi.NULL)
-        return dsa.DSAPrivateNumbers(
-            public_numbers=dsa.DSAPublicNumbers(
-                parameter_numbers=dsa.DSAParameterNumbers(
-                    p=self._backend._bn_to_int(p[0]),
-                    q=self._backend._bn_to_int(q[0]),
-                    g=self._backend._bn_to_int(g[0]),
-                ),
-                y=self._backend._bn_to_int(pub_key[0]),
-            ),
-            x=self._backend._bn_to_int(priv_key[0]),
-        )
-
-    def public_key(self) -> dsa.DSAPublicKey:
-        dsa_cdata = self._backend._lib.DSAparams_dup(self._dsa_cdata)
-        self._backend.openssl_assert(dsa_cdata != self._backend._ffi.NULL)
-        dsa_cdata = self._backend._ffi.gc(
-            dsa_cdata, self._backend._lib.DSA_free
-        )
-        pub_key = self._backend._ffi.new("BIGNUM **")
-        self._backend._lib.DSA_get0_key(
-            self._dsa_cdata, pub_key, self._backend._ffi.NULL
-        )
-        self._backend.openssl_assert(pub_key[0] != self._backend._ffi.NULL)
-        pub_key_dup = self._backend._lib.BN_dup(pub_key[0])
-        res = self._backend._lib.DSA_set0_key(
-            dsa_cdata, pub_key_dup, self._backend._ffi.NULL
-        )
-        self._backend.openssl_assert(res == 1)
-        evp_pkey = self._backend._dsa_cdata_to_evp_pkey(dsa_cdata)
-        return _DSAPublicKey(self._backend, dsa_cdata, evp_pkey)
-
-    def parameters(self) -> dsa.DSAParameters:
-        dsa_cdata = self._backend._lib.DSAparams_dup(self._dsa_cdata)
-        self._backend.openssl_assert(dsa_cdata != self._backend._ffi.NULL)
-        dsa_cdata = self._backend._ffi.gc(
-            dsa_cdata, self._backend._lib.DSA_free
-        )
-        return _DSAParameters(self._backend, dsa_cdata)
-
-    def private_bytes(
-        self,
-        encoding: serialization.Encoding,
-        format: serialization.PrivateFormat,
-        encryption_algorithm: serialization.KeySerializationEncryption,
-    ) -> bytes:
-        return self._backend._private_key_bytes(
-            encoding,
-            format,
-            encryption_algorithm,
-            self,
-            self._evp_pkey,
-            self._dsa_cdata,
-        )
-
-    def sign(
-        self,
-        data: bytes,
-        algorithm: typing.Union[asym_utils.Prehashed, hashes.HashAlgorithm],
-    ) -> bytes:
-        data, algorithm = _calculate_digest_and_algorithm(
-            self._backend, data, algorithm
-        )
-        return _dsa_sig_sign(self._backend, self, data)
+#Given an array arr[] of length N ≥ 2.
+#Remove an element from the given array such that the GCD of the array after removing it is maximized.
 
 
-class _DSAPublicKey(dsa.DSAPublicKey):
-    def __init__(self, backend, dsa_cdata, evp_pkey):
-        self._backend = backend
-        self._dsa_cdata = dsa_cdata
-        self._evp_pkey = evp_pkey
-        p = self._backend._ffi.new("BIGNUM **")
-        self._backend._lib.DSA_get0_pqg(
-            dsa_cdata, p, self._backend._ffi.NULL, self._backend._ffi.NULL
-        )
-        self._backend.openssl_assert(p[0] != backend._ffi.NULL)
-        self._key_size = self._backend._lib.BN_num_bits(p[0])
+import math as mt
 
-    key_size = utils.read_only_property("_key_size")
+def MaxGCD(a, n):
+    Prefix=[0 for i in range(n + 2)]
+    Suffix=[0 for i in range(n + 2)]
+    Prefix[1] = a[0]
+    Suffix[n] = a[n - 1]
+    for i in range(2,n+1):
+        Prefix[i] = mt.gcd(Prefix[i - 1], a[i - 1])
+    for i in range(n-1,0,-1):
+        Suffix[i] =mt.gcd(Suffix[i + 1], a[i - 1])  
+    ans = max(Suffix[2], Prefix[n - 1])
+    for i in range(2,n):
+        ans = max(ans, mt.gcd(Prefix[i - 1], Suffix[i + 1]))
+    return ans
 
-    def verifier(
-        self,
-        signature: bytes,
-        signature_algorithm: hashes.HashAlgorithm,
-    ) -> AsymmetricVerificationContext:
-        _warn_sign_verify_deprecated()
-        utils._check_bytes("signature", signature)
+a=[14, 17, 28, 70]
+n = len(a)
+ 
+print(MaxGCD(a, n))
 
-        _check_not_prehashed(signature_algorithm)
-        return _DSAVerificationContext(
-            self._backend, self, signature, signature_algorithm
-        )
 
-    def public_numbers(self) -> dsa.DSAPublicNumbers:
-        p = self._backend._ffi.new("BIGNUM **")
-        q = self._backend._ffi.new("BIGNUM **")
-        g = self._backend._ffi.new("BIGNUM **")
-        pub_key = self._backend._ffi.new("BIGNUM **")
-        self._backend._lib.DSA_get0_pqg(self._dsa_cdata, p, q, g)
-        self._backend.openssl_assert(p[0] != self._backend._ffi.NULL)
-        self._backend.openssl_assert(q[0] != self._backend._ffi.NULL)
-        self._backend.openssl_assert(g[0] != self._backend._ffi.NULL)
-        self._backend._lib.DSA_get0_key(
-            self._dsa_cdata, pub_key, self._backend._ffi.NULL
-        )
-        self._backend.openssl_assert(pub_key[0] != self._backend._ffi.NULL)
-        return dsa.DSAPublicNumbers(
-            parameter_numbers=dsa.DSAParameterNumbers(
-                p=self._backend._bn_to_int(p[0]),
-                q=self._backend._bn_to_int(q[0]),
-                g=self._backend._bn_to_int(g[0]),
-            ),
-            y=self._backend._bn_to_int(pub_key[0]),
-        )
+def sieveOfErat(n):
+    prms = [True for i in range(n+1)]
+    p = 2
+    while (p*p <=n):
+        if prms[p] == True:
+            for i in range(p*p,n+1,p):
+                prms[i] = False
+        p+=1
+    
+    for i in range(2,n+1):
+        if prms[i]:
+            print(i)
 
-    def parameters(self) -> dsa.DSAParameters:
-        dsa_cdata = self._backend._lib.DSAparams_dup(self._dsa_cdata)
-        dsa_cdata = self._backend._ffi.gc(
-            dsa_cdata, self._backend._lib.DSA_free
-        )
-        return _DSAParameters(self._backend, dsa_cdata)
 
-    def public_bytes(
-        self,
-        encoding: serialization.Encoding,
-        format: serialization.PublicFormat,
-    ) -> bytes:
-        return self._backend._public_key_bytes(
-            encoding, format, self, self._evp_pkey, None
-        )
+def lpf(n) :
+    least_prime = [0 for i in range(n + 1)]
+    least_prime[1] = 1
+    for i in range(2, n + 1) :
+        if (least_prime[i] == 0) :
+            # marking the prime number
+            # as its own lpf
+            least_prime[i] = i
+            # mark it as a divisor for all its
+            # multiples if not already marked
+            for j in range(i * i, n + 1, i) :
+                if (least_prime[j] == 0) :
+                    least_prime[j] = i
+     
+    for i in range(1, n + 1) :
+        print("Least Prime factor of "
+              ,i , ": " , least_prime[i] )
 
-    def verify(
-        self,
-        signature: bytes,
-        data: bytes,
-        algorithm: typing.Union[asym_utils.Prehashed, hashes.HashAlgorithm],
-    ):
-        data, algorithm = _calculate_digest_and_algorithm(
-            self._backend, data, algorithm
-        )
-        return _dsa_sig_verify(self._backend, self, signature, data)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#Find the Prime Numbers in a Given Interval in Python
+
+# Method 1: Using inner loop Range as [2, number-1].
+# Method 2: Using inner loop Range as [2, number/2].
+# Method 3: Using inner loop Range as [2, sqrt(number)].
+
+
+def first_methdod():
+    low, high = 2, 10
+    primes = []
+    for i in range(low, high + 1):
+        flag = 0
+        if i < 2:
+            continue
+        if i == 2:
+            primes.append(2)
+            continue
+        for x in range(2, i):
+            if i % x == 0:
+                flag = 1
+                break
+        if flag == 0:
+            primes.append(i)
+
+
+
+def second_method():
+    low, high = 2, 10
+    primes = []
+
+    for num in range(low, high + 1):
+        flag = 0
+        if num < 2:
+            flag = 1   
+        if num % 2 == 0:
+            continue
+        if num == 2:
+            primes.append(2)
+            continue
+        iter = 2
+
+        while iter < int(num / 2):
+            if num % iter == 0:
+                flag = 1
+                break
+            iter += 1
+
+        # sqrt method
+        while iter < int(pow(num,0.5)):
+            if num % iter == 0:
+                flag = 1
+                break
+            iter += 1
+
+    if flag == 0:
+        primes.append(num)
+
+    print(primes)
+
+
+#prime-factors-of-range-of-numbers
+
+
+#Given an array arr[] containing GCD of every possible pair of elements of another array.
+#The task is to find the original numbers which are used to calculate the GCD array.
+#For example, if original numbers are {4, 6, 8} then the given array will be {4, 2, 4, 2, 6, 2, 4, 2, 8}.
+#STEPS:
+
+# Sort the array in decreasing order.
+# Highest element will always be one of the original numbers. Keep that number and remove it from the array.
+# Compute GCD of the element taken in the previous step with the current element starting from the greatest and discard the GCD value from the given array.
+from math import sqrt, gcd
+def findNumbers(arr, n):
+    # Sort array in decreasing order
+    arr.sort(reverse = True)
+    #length of the frequency list should be equal to the greates element in the given gcd array to
+    # store the frequency of all gcd elements.
+    freq = [0 for i in range(arr[0] + 1)]
+    # Count frequency of each element
+    for i in range(n):
+        freq[arr[i]] += 1
+    # Size of the resultant array is always equal to root of the size of all elements 
+    size = int(sqrt(n))
+    brr = [0 for i in range(size)]
+    l = 0
+    for i in range(n):
+        if (freq[arr[i]] > 0):
+            print(f'frequency of gcd element {arr[i]} is {freq[arr[i]]}')
+            # Store the highest element in the resultant array
+            brr[l] = arr[i]
+            # Decrement the frequency of that element
+            freq[arr[i]] -= 1
+            print(f'frequency array {freq}')
+            l += 1
+            print(f'original elements updated to {brr}')
+            for j in range(l):
+                if (i != j):
+                   print(f'calculating gcd for {arr[i]}, {brr[j]} with i and j values as {i} and {j} respectively')
+                   x = gcd(arr[i], brr[j])
+                   print(f'gcd is {x}, reducing the count of {freq[x]} by 2')
+                   freq[x] -= 2 # two because frequency of gcd elemnt 1 is increased by two times for every pair of element
+                else:
+                   print(f'ignoring calculating gcd for {arr[i]}, {brr[j]} with i and j values as {i} and {j} respectively')
+                   
+    print(f'original elements array is {brr}')
+
+arr = [12, 5, 1, 1]
+n = len(arr)
+findNumbers(arr, n)
+
+                   
+ 
+
+
+
+
+        
+
+
+
+
+
+
+
